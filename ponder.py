@@ -13,28 +13,33 @@ for i in range(512):
             if ((bin(i//2+256)[k] == "0") and (bin(j//2+256)[k]=="1")):
                 count+=1
 
+        if( i%2 == 0 and bin(i//2+256)[3:11].count('1') == 0 and j%2 == 1 and bin(j//2+256)[3:11].count('1')  == 1):
+            flag+=1
+
         if(3 > count > 0 and flag == 0 and i%2 == 0 and j%2 == 1):
             G.add_edge(i,j)
             edges+=1
-            #print(count, bin(i//2+256), bin(j//2+256))
+            # print(i,j)
 
-print(edges)
+len_path = 92
+P = nx.path_graph(len_path)
 
-def similar(a,b,c,d):
-    if ((a==b) and ( c==d)):
-        return True
+for i in range(len_path-1):
+    P.add_node(i, end = "no")
+P.add_node(len_path-1, end='yes')
 
-P = nx.Graph()
-for i in range(87):
-    P.add_edge(i,i+1)
-P = nx.path_graph(86)
+for i in range(511):
+    G.add_node(i, end = "no")
+G.add_node(511, end='yes')
 
-gm = iso.GraphMatcher(G, P)
-generator_of_paths = gm.subgraph_isomorphisms_iter()
+def match(x,y):
+    return x['end'] == y['end']
 
+gm = iso.GraphMatcher(G, P, node_match=match)
 
+genpath = gm.subgraph_isomorphisms_iter()
 
-path1 = next(generator_of_paths)
+path1 = next(genpath)
 new_list = [bin(i+512)[3:11] for i in path1]
-print([i for i in path1])
-print(new_list)
+print([bin(i+512)[3:11].count('1') for i in path1])
+print([bin(i+512)[3:11] for i in path1])
